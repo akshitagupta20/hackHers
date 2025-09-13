@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Guru Live Voice Search</title>
+</head>
+<body>
+    <h2>Guru MVP: Live Voice Search (WebSocket)</h2>
+    <button id="startBtn">Start Recording</button>
+    <button id="stopBtn" disabled>Stop Recording</button>
+    <p id="status">Status: Idle</p>
+    <pre id="result"></pre>
+
+    <script>
+        let mediaRecorder;
+        let audioChunks = [];
+        let ws;
+
+        const startBtn = document.getElementById("startBtn");
+        const stopBtn = document.getElementById("stopBtn");
+        const statusEl = document.getElementById("status");
+        const resultEl = document.getElementById("result");
+
+        startBtn.onclick = async () => {
+            ws = new WebSocket("ws://127.0.0.1:8001/ws/voice");
+
+            ws.onopen = () => statusEl.textContent = "Status: Connected to WebSocket";
+
+            ws.onmessage = (event) => {
+                try {
+                    const data = JSON.parse(event.data);
+                    if (data.transcribed_text) {
+                        resultEl.textContent = JSON.stringify(data, null, 2);
+                    } else if (data.error) {
+                        resultEl.textContent = "Error: " + data.error;
+                    }
+                } catch {
+                    resultEl.textContent = event.data;
+                }
+            };
+
+            ws.onerror = (err) => {
+                statusEl.textContent = "WebSocket error";
+                console.error(err);
+            };
+
+            const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+            mediaRecorder = new MediaRecorder(stream);
+            audioChunks = [];
+
+            mediaRecorder.ondataavailable = e => audioChunks.push(e.data);
+
+            mediaRecorder.onstart = () => {
+                statusEl.textContent = "Status: Recording...";
+                startBtn.disabled = true;
+                stopBtn.disabled = false;
+            };
+
+            mediaRecorder.start();
+        };
+
+        stopBtn.onclick = () => {
+            mediaRecorder.stop();
+            mediaRecorder.onstop = () => {
+                statusEl.textContent = "Status: Sending audio...";
+                startBtn.disabled = false;
+                stopBtn.disabled = true;
+
+                const audioBlob = new Blob(audioChunks, { type: "audio/wav" });
+                const reader = new FileReader();
+                reader.onloadend = () => {
+                    const base64data = reader.result.split(',')[1];
+                    ws.send(base64data);
+                    statusEl.textContent = "Status: Waiting for transcription...";
+                };
+                reader.readAsDataURL(audioBlob);
+            };
+        };
+    </script>
+</body>
+</html>

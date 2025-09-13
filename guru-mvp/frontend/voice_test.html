@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Guru Voice Search Test</title>
+</head>
+<body>
+    <h2>Guru MVP: Voice Search Test (File Upload)</h2>
+    <input type="file" id="audioFile" accept=".wav,.mp3">
+    <button id="submitBtn">Submit</button>
+    <p id="status">Status: Idle</p>
+    <pre id="result"></pre>
+
+    <script>
+        const submitBtn = document.getElementById("submitBtn");
+        const audioFile = document.getElementById("audioFile");
+        const statusEl = document.getElementById("status");
+        const resultEl = document.getElementById("result");
+
+        submitBtn.onclick = async () => {
+            if (!audioFile.files.length) return alert("Please select a file");
+            statusEl.textContent = "Status: Uploading...";
+
+            const formData = new FormData();
+            formData.append("file", audioFile.files[0]);
+
+            try {
+                const response = await fetch("http://127.0.0.1:8001/voice_search", {
+                    method: "POST",
+                    body: formData
+                });
+                const data = await response.json();
+                resultEl.textContent = JSON.stringify(data, null, 2);
+            } catch (err) {
+                resultEl.textContent = "Error: " + err;
+            } finally {
+                statusEl.textContent = "Status: Idle";
+            }
+        };
+    </script>
+</body>
+</html>

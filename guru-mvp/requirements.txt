@@ -1,0 +1,7 @@
+fastapi
+uvicorn
+pydantic
+speechrecognition
+pydub
+websockets
+python-multipart
