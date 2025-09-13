@@ -1,11 +1,11 @@
 import { useState } from 'react'
 
-export default function VoiceInput() {
+export default function VoiceInput({ driverId, language }) {
   const [listening, setListening] = useState(false)
 
   const startListening = () => {
     const recognition = new window.webkitSpeechRecognition()
-    recognition.lang = 'hi-IN'
+    recognition.lang = language === "kn" ? "kn-IN" : language === "en" ? "en-IN" : "hi-IN"
     recognition.interimResults = false
     recognition.continuous = false
 
@@ -20,13 +20,13 @@ export default function VoiceInput() {
       fetch('http://localhost:8000/saathi/respond', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ transcript })
+        body: JSON.stringify({ transcript, driver_id: driverId })
       })
         .then((res) => res.json())
         .then((data) => {
           alert(data.message)
           const utterance = new SpeechSynthesisUtterance(data.message)
-          utterance.lang = 'hi-IN'
+          utterance.lang = recognition.lang
           speechSynthesis.speak(utterance)
         })
     }
@@ -35,7 +35,8 @@ export default function VoiceInput() {
   }
 
   return (
-    <div className="mt-4 text-center">
+    <div className="p-4 text-center">
+      <h1 className="text-xl font-bold">🎙️ Porter Saathi</h1>
       <button onClick={startListening} className="px-4 py-2 bg-blue-600 text-white rounded">
         🎙️ Speak Now
       </button>
