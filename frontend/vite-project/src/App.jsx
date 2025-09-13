@@ -2,7 +2,7 @@ import { useState } from 'react'
 import Login from './components/Login.jsx'
 import VoiceInput from './components/VoiceInput.jsx'
 
-function App() {
+export default function App() {
   const [driverId, setDriverId] = useState(null)
   const [language, setLanguage] = useState("hi")
 
@@ -15,6 +15,3 @@ function App() {
     }} />
   )
 }
-
-export default App
-

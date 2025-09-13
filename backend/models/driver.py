@@ -6,3 +6,4 @@ class Driver(Base):
     id = Column(Integer, primary_key=True, index=True)
     name = Column(String)
     language = Column(String)  # "en", "hi", "kn"
+    phone = Column(String, unique=True)
