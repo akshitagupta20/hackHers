@@ -8,7 +8,11 @@ This project bridges the literacy gap by enabling conversational access to earni
 ## 🚀 Features
 - 🎙 **Voice Input (Mic Support):** Drivers interact using speech instead of text.
 - 📊 **Simplified Finance:** Query daily earnings like *“Aaj ka kharcha kaat ke kitna kamaya?”*.
+<<<<<<< HEAD
+- 🗂 **Service Layer Logic:** Matches spoken tokens to business data stored in the database. 
+=======
 - 🗂 **Service Layer Logic:** Matches spoken tokens to business data stored in the database.
+>>>>>>> 220db451880b371f2d522cfa046ce0391bcedaf0
 - 🌐 **Full-Stack Setup:** React (frontend) + FastAPI (backend).
 
 ---
